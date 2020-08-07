@@ -3,6 +3,7 @@ import subprocess
 import stack
 
 
+# This code is ugly and could improve a lot.
 def relate_stack(provides: str, requires: str):
     """ Execute Relation with Stack Relations if they exist """
     p_component, p_relation = provides.split(":")

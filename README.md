@@ -1,26 +1,20 @@
-# Juju Stacks PoC
+# Juju Stacks Prototype
 
-This is a samll PoC of the Juju Stacks concept.
+This is a samll Prototype of the Juju Stacks concept.
 
 
 ## How to Use
 
-You can check all the options available with:
-
-`./juju-stack --help`
+Using `./juju-stack` should be identical to the juju cli just changing the executable.
 
 When a stack is deployed its information will be stored in `~/.local/share/juju/stacks.yaml`
+
 ### Deploy a Stack
-`./juju-stack --deploy test-stacks/mysql-stack.yaml`
-
-### List all Stacks
-`./juju-stack --list`
-
-### Show a stack
-`./juju-stack --show mydatabase-stack`
+`./juju-stack deploy test-stacks/mysql-stack`
 
 ### Delete a Stack
-`./juju-stack --delete mydatabase-stack`
+`./juju-stack remove-stack mydatabase-stack`
 
 ### Relate a Stack with another component
-`./juju-stack --relate mydatabase-stack:mydatabase-db wordpress:db`
+`./juju-stack relate mydatabase-stack:mydatabase-db wordpress:db`
+`./juju-stack add-relation mydatabase-stack:mydatabase-db wordpress:db`

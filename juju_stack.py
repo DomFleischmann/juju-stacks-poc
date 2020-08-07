@@ -2,37 +2,31 @@
 """
 Module for the Juju Stack CLI
 """
-
-
 import argparse
-import relate
+import subprocess
 import stack
+import relate
+
+
+def execute_juju_cmd(cmd: str):
+    """ Passthrough Arguments to Juju CLI """
+    cmd = ["juju"] + cmd
+    subprocess.run(cmd, check=True)
 
 
 PARSER = argparse.ArgumentParser(description="Juju Stack CLI")
-PARSER.add_argument("--list", action="store_true", help="List all the stacks")
-PARSER.add_argument("--show", action="store", help="Show a Stack")
-PARSER.add_argument("--deploy", action="store", help="Deploy a Stack")
-PARSER.add_argument("--delete", action="store", help="Delete a Stack")
-PARSER.add_argument("--update", nargs="*", help="Update a Stack")
-PARSER.add_argument("--relate", nargs=2,
-                    help="Relate a Stack Endpoint")
+PARSER.add_argument("cmd", nargs="*", help="Juju command")
 
-ARGS = PARSER.parse_args()
+ARGS, UNKNOWN = PARSER.parse_known_args()
 
-if ARGS.deploy:
-    stack.deploy_stack(ARGS.deploy)
-
-if ARGS.relate:
-    print(ARGS.relate)
-    relate.relate_stack(ARGS.relate[0], ARGS.relate[1])
-
-if ARGS.delete:
-    stack.delete_stack(ARGS.delete)
-
-if ARGS.list:
-    for stack_item in stack.list_stacks():
-        print(stack_item)
-
-if ARGS.show:
-    print(stack.show_stack(ARGS.show))
+if ARGS.cmd:
+    CMD = ARGS.cmd + UNKNOWN
+    if CMD[0] == "deploy":
+        if not stack.deploy_stack(CMD[1]):
+            execute_juju_cmd(CMD)
+    elif CMD[0] == "relate" or CMD[0] == "add-relation":
+        relate.relate_stack(CMD[1], CMD[2])
+    elif CMD[0] == "remove-stack":
+        stack.delete_stack(CMD[1])
+    else:
+        execute_juju_cmd(CMD)

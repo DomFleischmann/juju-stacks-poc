@@ -4,8 +4,12 @@ import yaml
 import component
 
 
-def load_stack_data(filename: str,) -> dict:
+def load_stack_data(stack_name: str,) -> dict:
     """ Load the Stack Metadata file of a specific Stack """
+    filename = "{}/stack.yaml".format(stack_name)
+    if not os.path.isfile(filename):
+        return None
+
     with open(filename) as file_stream:
         return yaml.safe_load(file_stream)
 
@@ -58,14 +62,19 @@ def show_stack(stack_name: str) -> str:
         return yaml.dump(stacks[stack_name])
 
 
-def deploy_stack(filename: str):
+def deploy_stack(stack_name: str):
     """ Deploy a Stack taken from a metadata File """
-    d_stack = load_stack_data(filename)
+    d_stack = load_stack_data(stack_name)
+
+    if d_stack is None:
+        return False
+
     component.deploy_charms(d_stack["components"])
     write_new_stack_in_file(d_stack["name"], d_stack)
+    return True
 
 
-def delete_stack(stackname: str):
+def delete_stack(stackname: str) -> bool:
     """ Delete a deployed Stack """
     stacks = load_stacks_file()
 
