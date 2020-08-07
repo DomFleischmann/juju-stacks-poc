@@ -1,0 +1,16 @@
+---
+name: mydatabase-stack
+description: "Stack for my MySQL Database"
+components:
+  mydatabase:
+    charm: cs:mysql-58
+    config:
+      block-size: 6
+      dataset-size: '81%'
+    num_units: 1
+provides:
+  mydatabase-db:
+    forward: mydatabase:db
+requires:
+  mydatabase-slave:
+    forward: mydatabase:slave
