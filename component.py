@@ -1,11 +1,12 @@
 """
-Deploy the stack
+Module in charge of everything related with Stack Components
 """
 import subprocess
 import stack
 
 
 def deploy_charms(components: dict) -> bool:
+    """ Deploy all the charms in the Stack """
     deploy_cmds = []
     for c_name, c_content in components.items():
         if "charm" in c_content:
@@ -16,11 +17,13 @@ def deploy_charms(components: dict) -> bool:
             deploy_cmds.append(deploy_cmd)
 
     for cmd in deploy_cmds:
-        subprocess.run(cmd)
-
+        subprocess.run(cmd, check=True)
 
 
 def load_config(config: dict) -> list:
+    """
+    Take the config of a charm and convert it into a CLI friendly format
+    """
     config_list = []
     for conf_name, conf_value in config.items():
         config_list.append("--config")
@@ -29,24 +32,12 @@ def load_config(config: dict) -> list:
     return config_list
 
 
-def deploy_stack(filename: str):
-    deploy_stack = stack.load_stack_file(filename)
-    deploy_charms(deploy_stack["components"])
-    stack.write_new_stack(deploy_stack["name"], deploy_stack)
-
-def delete_components(components: dict):
+def delete_charms(components: dict):
+    """ Delete the Charms in the Stack """
     del_cmds = []
     for c_name, c_content in components.items():
         if "charm" in c_content:
             del_cmds.append(["juju", "remove-application", c_name])
 
     for cmd in del_cmds:
-        subprocess.run(cmd)
-
-
-def delete_stack(stackname: str):
-    stacks = stack.load_stacks_file()
-
-    if stackname in stacks:
-        delete_components(stacks[stackname]["components"])
-        stack.delete_stack(stackname)
+        subprocess.run(cmd, check=True)
