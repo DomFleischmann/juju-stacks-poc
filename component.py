@@ -40,3 +40,12 @@ def delete_charms(components: dict):
 
     for cmd in del_cmds:
         subprocess.run(cmd, check=True)
+
+def update_configs(comp: dict, configs: list) -> dict:
+    comp_conf = comp["config"].copy()
+
+    for config in configs:
+        split_conf = config.split("=")
+        comp_conf[split_conf[0]] = split_conf[1]
+
+    return comp_conf

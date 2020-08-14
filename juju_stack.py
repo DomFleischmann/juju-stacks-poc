@@ -20,7 +20,7 @@ PARSER.add_argument("cmd", nargs="*", help="Juju command")
 
 ARGS, UNKNOWN = PARSER.parse_known_args()
 
-status.update_stacks_from_status()
+stack.update_stacks_from_status()
 
 if ARGS.cmd:
     CMD = ARGS.cmd + UNKNOWN
@@ -36,7 +36,11 @@ if ARGS.cmd:
             print(status.juju_status_with_stack())
     elif CMD[0] == "remove-stack":
         stack.delete_stack(CMD[1])
+    elif CMD[0] == "config":
+        execute_juju_cmd(CMD)
+        if len(CMD) > 2:
+            stack.update_stack_config(CMD)
     elif CMD[0] == "update-stack":
-        status.update_stacks_from_status()
+        stack.update_stacks_from_status()
     else:
         execute_juju_cmd(CMD)

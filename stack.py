@@ -57,3 +57,20 @@ def update_stacks_from_status():
                 new_value = s_value.copy()
                 new_value["components"][comp]["num_units"] = status_units
                 files.update_stack_in_file(model["name"], s_key, new_value)
+
+
+def update_stack_config(cmd: list):
+    """
+    Check if config command affected any stack component and update the stack
+    """
+    stacks = get_stacks_from_current_model()
+    model = status.get_current_model()
+
+    comp = cmd[1]
+    for s_key, s_value in stacks.items():
+        if comp in s_value["components"]:
+            comp_dict = s_value["components"][comp]
+            new_config = component.update_configs(comp_dict, cmd[2:])
+            new_value = s_value.copy()
+            new_value["components"][comp]["config"] = new_config
+            files.update_stack_in_file(model["name"], s_key, new_value)
