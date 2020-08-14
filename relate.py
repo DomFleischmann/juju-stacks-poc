@@ -1,7 +1,6 @@
 """ Module in charge of Relating a Stack with another component """
 import subprocess
 import stack
-import status
 
 
 # This code is ugly and could improve a lot.
@@ -22,7 +21,7 @@ def relate_stack(provides: str, requires: str):
 
 def get_stack_provides(component: str, relation: str) -> str:
     """ Checks if Component has Provides Relation """
-    stacks = status.get_stacks_from_current_model()
+    stacks = stack.get_stacks_from_current_model()
 
     if stacks is None:
         return None
@@ -36,7 +35,7 @@ def get_stack_provides(component: str, relation: str) -> str:
 
 def get_stack_requires(component: str, relation: str) -> str:
     """ Checks if Component has Requires Relation """
-    stacks = status.get_stacks_from_current_model()
+    stacks = stack.get_stacks_from_current_model()
 
     if stacks is None:
         return None

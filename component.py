@@ -2,7 +2,6 @@
 Module in charge of everything related with Stack Components
 """
 import subprocess
-import stack
 
 
 def deploy_charms(components: dict) -> bool:
