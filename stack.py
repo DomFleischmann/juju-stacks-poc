@@ -2,6 +2,7 @@
 import os
 import yaml
 import component
+import status
 
 
 def load_stack_data(stack_name: str,) -> dict:
@@ -17,7 +18,12 @@ def load_stack_data(stack_name: str,) -> dict:
 def load_stacks_file() -> dict:
     """ Load complete Local Stacks File """
     home = os.getenv("HOME")
-    with open("{}/.local/share/juju/stacks.yaml".format(home), "r") as s_file:
+    filename = "{}/.local/share/juju/stacks.yaml".format(home)
+
+    if not os.path.isfile(filename):
+        open(filename, 'w').close()
+
+    with open(filename, "r") as s_file:
         stacks = yaml.safe_load(s_file)
 
     return stacks
@@ -31,53 +37,60 @@ def write_stacks_file(content: dict) -> dict:
         s_file.write(yaml.dump(content))
 
 
-def write_new_stack_in_file(stack_name: str, stack: dict):
+def write_new_stack_in_file(model: str, stack_name: str, stack: dict):
     """ Write a new Stack in the local Stacks file """
     stacks = load_stacks_file()
 
-    stacks[stack_name] = stack
+    if stacks is None:
+        stacks = {}
+
+    if model not in stacks:
+        stacks[model] = {}
+
+    stacks[model][stack_name] = stack
 
     write_stacks_file(stacks)
 
 
-def delete_stack_in_file(stack_name: str):
+def update_stack_in_file(model: str, stack_name: str, stack: dict):
+    """ Updates an existing stack in stackfile """
+    stacks = load_stacks_file()
+
+    stacks[model][stack_name] = stack
+
+    write_stacks_file(stacks)
+
+
+def delete_stack_in_file(model: str, stack_name: str):
     """ Delete a Stack from the local Stack file """
     stacks = load_stacks_file()
 
-    del stacks[stack_name]
+    del stacks[model][stack_name]
 
     write_stacks_file(stacks)
-
-
-def list_stacks() -> list:
-    """ List all the deployed Stacks """
-    return load_stacks_file().keys()
-
-
-def show_stack(stack_name: str) -> str:
-    """ Show a specific Stack """
-    stacks = load_stacks_file()
-
-    if stack_name in stacks:
-        return yaml.dump(stacks[stack_name])
 
 
 def deploy_stack(stack_name: str):
     """ Deploy a Stack taken from a metadata File """
+    model = status.get_current_model()
     d_stack = load_stack_data(stack_name)
 
     if d_stack is None:
         return False
 
     component.deploy_charms(d_stack["components"])
-    write_new_stack_in_file(d_stack["name"], d_stack)
+    write_new_stack_in_file(model["name"], d_stack["name"], d_stack)
     return True
 
 
 def delete_stack(stackname: str) -> bool:
     """ Delete a deployed Stack """
-    stacks = load_stacks_file()
+    model = status.get_current_model()
+    stacks_f = load_stacks_file()
+    stacks = stacks_f[model["name"]]
 
     if stackname in stacks:
         component.delete_charms(stacks[stackname]["components"])
-        delete_stack_in_file(stackname)
+        delete_stack_in_file(model["name"], stackname)
+    else:
+        print("{} not found".format(stackname))

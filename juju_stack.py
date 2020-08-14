@@ -6,6 +6,7 @@ import argparse
 import subprocess
 import stack
 import relate
+import status
 
 
 def execute_juju_cmd(cmd: str):
@@ -19,6 +20,8 @@ PARSER.add_argument("cmd", nargs="*", help="Juju command")
 
 ARGS, UNKNOWN = PARSER.parse_known_args()
 
+status.update_stacks_from_status()
+
 if ARGS.cmd:
     CMD = ARGS.cmd + UNKNOWN
     if CMD[0] == "deploy":
@@ -26,7 +29,14 @@ if ARGS.cmd:
             execute_juju_cmd(CMD)
     elif CMD[0] == "relate" or CMD[0] == "add-relation":
         relate.relate_stack(CMD[1], CMD[2])
+    elif CMD[0] == "status":
+        if len(CMD) > 1 and CMD[1] == "--expand-stacks":
+            print(status.juju_status_with_stack_expanded())
+        else:
+            print(status.juju_status_with_stack())
     elif CMD[0] == "remove-stack":
         stack.delete_stack(CMD[1])
+    elif CMD[0] == "update-stack":
+        status.update_stacks_from_status()
     else:
         execute_juju_cmd(CMD)

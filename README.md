@@ -18,3 +18,9 @@ When a stack is deployed its information will be stored in `~/.local/share/juju/
 ### Relate a Stack with another component
 `./juju-stack relate mydatabase-stack:mydatabase-db wordpress:db`
 `./juju-stack add-relation mydatabase-stack:mydatabase-db wordpress:db`
+
+### Stack Status
+`./juju-stack status`
+
+More detail:
+`./juju-stack status --expand-stacks`
