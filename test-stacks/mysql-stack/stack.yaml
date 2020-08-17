@@ -1,16 +1,16 @@
 ---
-name: mydatabase-stack
+name: mysql
 description: "Stack for my MySQL Database"
 components:
-  mydatabase:
+  database:
     charm: cs:mysql-58
     config:
       block-size: 6
       dataset-size: '81%'
     num_units: 1
 provides:
-  mydatabase-db:
-    forward: mydatabase:db
+  db:
+    forward: database:db
 requires:
-  mydatabase-slave:
-    forward: mydatabase:slave
+  slave:
+    forward: database:slave

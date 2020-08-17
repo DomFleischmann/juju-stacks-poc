@@ -24,6 +24,9 @@ def load_stacks_file() -> dict:
     with open(filename, "r") as s_file:
         stacks = yaml.safe_load(s_file)
 
+    if stacks is None:
+        return {}
+
     return stacks
 
 

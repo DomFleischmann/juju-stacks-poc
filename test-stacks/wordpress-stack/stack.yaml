@@ -1,0 +1,28 @@
+---
+name: wordpress
+description: "Stack for a Wordpress with DB"
+components:
+  frontend:
+    charm: cs:wordpress
+    config:
+      tuning: bare
+    num_units: 1
+  database:
+    charm: cs:mysql-58
+    config:
+      block-size: 6
+      dataset-size: '81%'
+    num_units: 1
+provides:
+  db:
+    forward: database:db
+  website:
+    forward: frontend:website
+requires:
+  slave:
+    forward: database:slave
+  cache:
+    forward: frontend:cache
+relations:
+  - requirer: frontend:db
+    provider: database:db

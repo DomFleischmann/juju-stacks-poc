@@ -4,12 +4,13 @@ Module in charge of everything related with Stack Components
 import subprocess
 
 
-def deploy_charms(components: dict) -> bool:
+def deploy_charms(stack_name: str, components: dict) -> bool:
     """ Deploy all the charms in the Stack """
     deploy_cmds = []
     for c_name, c_content in components.items():
         if "charm" in c_content:
-            deploy_cmd = ["juju", "deploy", c_content["charm"], c_name,
+            app_name = "{}-s-{}".format(stack_name, c_name)
+            deploy_cmd = ["juju", "deploy", c_content["charm"], app_name,
                           "-n", str(c_content["num_units"])]
             config = load_config(c_content["config"])
             deploy_cmd = deploy_cmd + config
@@ -31,12 +32,13 @@ def load_config(config: dict) -> list:
     return config_list
 
 
-def delete_charms(components: dict):
+def delete_charms(stack_name: str, components: dict):
     """ Delete the Charms in the Stack """
     del_cmds = []
     for c_name, c_content in components.items():
         if "charm" in c_content:
-            del_cmds.append(["juju", "remove-application", c_name])
+            app_name = "{}-s-{}".format(stack_name, c_name)
+            del_cmds.append(["juju", "remove-application", app_name])
 
     for cmd in del_cmds:
         subprocess.run(cmd, check=True)

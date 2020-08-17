@@ -19,18 +19,19 @@ def relate_stack(provides: str, requires: str):
     subprocess.run(["juju", "add-relation", provides, requires], check=True)
 
 
-def get_stack_provides(component: str, relation: str) -> str:
+def get_stack_provides(s_stack: str, relation: str) -> str:
     """ Checks if Component has Provides Relation """
     stacks = stack.get_stacks_from_current_model()
 
     if stacks is None:
         return None
-    if component not in stacks:
+
+    if s_stack not in stacks:
         return None
 
-    p_stack = stacks[component]
+    forward = stacks[s_stack]["provides"][relation]["forward"]
 
-    return p_stack["provides"][relation]["forward"]
+    return "{}-s-{}".format(stacks[s_stack]["name"], forward)
 
 
 def get_stack_requires(component: str, relation: str) -> str:
