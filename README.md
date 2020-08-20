@@ -13,14 +13,11 @@ When a stack is deployed its information will be stored in `~/.local/share/juju/
 `./juju-stack deploy test-stacks/mysql-stack`
 
 ### Delete a Stack
-`./juju-stack remove-stack mydatabase-stack`
+`./juju-stack remove-stack mysql`
 
 ### Relate a Stack with another component
-`./juju-stack relate mydatabase-stack:mydatabase-db wordpress:db`
-`./juju-stack add-relation mydatabase-stack:mydatabase-db wordpress:db`
+`./juju-stack relate mysql:db wordpress:db`
+`./juju-stack add-relation mysql:db wordpress:db`
 
 ### Stack Status
 `./juju-stack status`
-
-More detail:
-`./juju-stack status --expand-stacks`
