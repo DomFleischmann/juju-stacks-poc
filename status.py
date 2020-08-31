@@ -3,6 +3,7 @@ Module in charge of representing the status
 """
 import subprocess
 import yaml
+import re
 
 
 def get_current_model() -> dict:
@@ -18,10 +19,16 @@ def get_juju_status() -> dict:
     return yaml.safe_load(result.stdout)
 
 
-def juju_status_with_stack() -> str:
-    """ Extend juju status with stack information """
-    cmd = ["juju", "status"]
+def show_juju_status(cmd: list):
+    """ Print Juju status with . namespace naming """
+    cmd = ["juju"] + cmd + ["--color"]
 
     result = subprocess.run(cmd, capture_output=True, check=True)
 
-    return result.stdout.decode("utf-8").replace("-s-", ".")
+    result = result.stdout.decode("utf-8")
+    substituted_words = re.findall("[^\s]+-s-[^\s]+\s", result)
+
+    for s_word in substituted_words:
+        result = result.replace(s_word, s_word.replace("-s-", ".") + "  ")
+
+    print(result)

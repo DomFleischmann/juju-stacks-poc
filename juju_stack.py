@@ -15,7 +15,16 @@ def execute_juju_cmd(cmd: list):
 
     result = subprocess.run(cmd, capture_output=True, check=True)
 
-    print(result.stdout.decode("utf-8").replace("-s-", "."))
+    print(adapt_output_naming(result.stdout.decode("utf-8")))
+
+
+def adapt_output_naming(output: str):
+    """ Change to . namespace naming for stack components """
+    stacks = stack.get_stacks_from_current_model()
+    for s_stack in stacks:
+        output = output.replace(s_stack + "-s-", s_stack + ".")
+
+    return output
 
 
 def adapt_naming(cmd: list) -> list:
@@ -45,6 +54,8 @@ if ARGS.cmd:
         relate.relate_stack(CMD[1], CMD[2])
     elif CMD[0] == "remove-stack":
         stack.delete_stack(CMD[1])
+    elif CMD[0] == "status":
+        status.show_juju_status(CMD)
     elif CMD[0] == "config":
         execute_juju_cmd(CMD)
         if len(CMD) > 2:
